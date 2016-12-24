@@ -1,9 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import m from 'mithril';
 import App from './App';
 import './index.css';
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root')
+m.mount(
+  document.getElementById('root'),
+  App
 );
