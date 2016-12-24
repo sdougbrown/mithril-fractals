@@ -1,6 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+This project was forked from [react-fractals](https://github.com/Swizec/react-fractals).
 
-# React Fractals
+# Mithril Fractals
 
 An experiment in fractalization and component recursion.
 
