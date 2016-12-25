@@ -18,9 +18,9 @@ function next(vnode) {
 }
 
 function queueRedraw(state) {
+  m.redraw();
   state.isRedrawQueued = true;
   window.requestAnimationFrame(() => {
-    m.redraw();
     state.isRedrawQueued = false;
   });
 }
