@@ -15,6 +15,7 @@ function next(vnode) {
   if (currentMax < realMax) {
     vnode.state.currentMax = currentMax + 1;
     setTimeout(next.bind(null, vnode), 500);
+    m.redraw();
   }
 }
 
