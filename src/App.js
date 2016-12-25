@@ -6,6 +6,7 @@ import { scaleLinear } from 'd3-scale';
 
 import Pythagoras from './Pythagoras';
 
+const bounceTime = 10;
 const realMax = 11;
 
 function next(vnode) {
@@ -19,22 +20,25 @@ function next(vnode) {
 
 function queueRedraw(state) {
   m.redraw();
-  state.isRedrawQueued = true;
-  window.requestAnimationFrame(() => {
-    state.isRedrawQueued = false;
-  });
+  state.bounced = true;
+  setTimeout(() => {
+    state.bounced = false;
+  }, bounceTime);
 }
 
 function bindMouse(parentNode, vnode) {
-  d3select(vnode.dom).on("mousemove", onMouseMove.bind(null, vnode, parentNode.state));
+  return function onCreate(vnode) {
+    d3select(vnode.dom).on("mousemove", onMouseMove.bind(null, vnode, parentNode.state));
 
-  next(parentNode);
+    next(parentNode);
+  }
 }
 
 function onMouseMove(vnode, state) {
-  if (state.isRedrawQueued) return;
-  const svg = state.svg;
+  if (state.bounced) return;
+  queueRedraw(state);
 
+  const svg = state.svg;
   const [x, y] = d3mouse(vnode.dom),
 
     scaleFactor = scaleLinear().domain([svg.height, 0])
@@ -45,11 +49,10 @@ function onMouseMove(vnode, state) {
 
   state.heightFactor = scaleFactor(y);
   state.lean = scaleLean(x);
-  queueRedraw(state);
 }
 
 const App = {
-  isRedrawQueued: false,
+  bounced: false,
   svg: {
     width: 1280,
     height: 600
@@ -58,6 +61,10 @@ const App = {
   baseW: 80,
   heightFactor: 0,
   lean: 0,
+
+  oninit(vnode) {
+    vnode.state.onsvgcreate = bindMouse(vnode);
+  },
 
   view(vnode) {
     const state = vnode.state;
@@ -74,7 +81,7 @@ const App = {
             width: svg.width,
             height: svg.height,
             style: { border: "1px solid lightgray" },
-            oncreate: bindMouse.bind(null, vnode),
+            oncreate: state.onsvgcreate,
           }, [
             m(Pythagoras, {
               w: state.baseW,
